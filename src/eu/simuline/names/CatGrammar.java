@@ -10,7 +10,20 @@ import java.util.Set;
 import java.util.HashSet;
 
 /**
- * Describe class CatGrammar here.
+ * Describes the grammar of a namespace. 
+ * The atoms of the grammar are the categories collected in {@link #cats}. 
+ * Essentially, a category is given by a list/collection of compartments 
+ * allowed for this category. 
+ * The corresponding mapping is given by {@link #cat2comps}. 
+ * <p>
+ * The rules of the grammar given by {@link #rules} are the transitions 
+ * between the categories. 
+ * Certain categories are distinguished in that a name may start with it 
+ * (the ones registered in {@link #starts}) 
+ * and that a name may end with such a category 
+ * (the ones registered in {@link #stops}). 
+ * For the latter note that an appendix after an end-category 
+ * is always allowed. 
  *
  *
  * Created: Mon Apr 14 20:13:15 2008
