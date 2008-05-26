@@ -84,6 +84,16 @@ public class NameAnalyzer {
 // 		}
 
 	    } // for this.possCats
+
+	    if (this.successors.isEmpty()) {
+		// Here, no category was found at all. 
+		newPointer = new Pointer(NameAnalyzer.this.name.length(), 
+					 CatGrammar.FREE_CAT, 
+					 null, 
+					 this);
+		this.successors.add(newPointer);
+
+	    }
 	}
 
 	private Pointer getSingleSuccessor() {
@@ -102,10 +112,20 @@ public class NameAnalyzer {
 	    }
 	}
 
-	boolean isAllComplete() {
+	private boolean isStop() {
+	    return NameAnalyzer.this.catGr.stops.contains(this.cat); 
+	}
 
+	private boolean isFree() {
+	    return this.cat == CatGrammar.FREE_CAT;
+	}
+
+	boolean isAllComplete() {
 	    if (this.successors.size() == 0) {
-		return NameAnalyzer.this.catGr.stops.contains(this.cat);
+		return isStop() || 
+		    (isFree() 
+		     && this.predecessor != null 
+		     && this.predecessor.isStop());
 	    }
 
 	    assert this.successors.size() > 0;
@@ -123,7 +143,9 @@ public class NameAnalyzer {
 	    if (this.cat != null) {
 		assert this.predecessor != null;
 		res.append("-");
-		res.append(this.comp.shortName());
+		res.append(NameAnalyzer.this.name
+			   .substring(this.predecessor.index,this.index));
+//		res.append(this.comp.shortName());
 		if (NameAnalyzer.this.catGr.stops.contains(this.cat)) {
 		    res.append("|");
 		}
@@ -140,7 +162,8 @@ public class NameAnalyzer {
 		    res.append(getSingleSuccessor().linString());
 		    break;
 		default:
-		    throw new IllegalStateException();
+		    throw new IllegalStateException
+			("Potential structure is not linear. ");
 	    }
 
 	    return res.toString();
@@ -153,7 +176,10 @@ public class NameAnalyzer {
 		res.append("(");
 		res.append(this.cat);
 		res.append(":");
-		res.append(this.comp.shortName());
+
+		res.append(NameAnalyzer.this.name
+			   .substring(this.predecessor.index,this.index));
+//		res.append(this.comp.shortName());
 		res.append(")");
 		if (NameAnalyzer.this.catGr.stops.contains(this.cat)) {
 		    res.append("|");
