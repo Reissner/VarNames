@@ -1,7 +1,7 @@
 
-package eu.simuline.namecheck;
+package eu.simuline.names;
 
-import eu.simuline.namecheck.parser.ParseException;
+import eu.simuline.names.parser.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
