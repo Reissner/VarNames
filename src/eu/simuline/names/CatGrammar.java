@@ -1,6 +1,5 @@
-package eu.simuline.namecheck;
-
-import eu.simuline.namecheck.parser.ParseException;
+package eu.simuline.names;
+import eu.simuline.names.parser.ParseException;
 
 import java.util.Collection;
 import java.util.List;

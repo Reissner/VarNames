@@ -1,4 +1,4 @@
-package eu.simuline.namecheck;
+package eu.simuline.names;
 
 /**
  * Describe class Category here.
