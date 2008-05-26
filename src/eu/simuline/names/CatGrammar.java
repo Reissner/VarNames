@@ -33,6 +33,8 @@ import java.util.HashSet;
  */
 public class CatGrammar {
 
+    public final static Category FREE_CAT = new Category("FREE_CAT");
+
     Collection<Category> cats;
     Map<Category,Collection<Category>> rules;
     Set<Category         > starts;
