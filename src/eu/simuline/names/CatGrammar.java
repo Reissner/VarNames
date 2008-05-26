@@ -1,4 +1,5 @@
 package eu.simuline.names;
+
 import eu.simuline.names.parser.ParseException;
 
 import java.util.Collection;
