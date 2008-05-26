@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 
 /**
- * Describe class Files here.
+ * A container for all files defining the grammar and for the grammar itself.
  *
  *
  * Created: Tue Apr 15 19:39:39 2008
