@@ -39,8 +39,8 @@ public class NameCreator {
 	       ("Usage: the name of the rules file. ");
 	}
 
-	NameCreator nCheck = new NameCreator(new File(args[0]));
-	CatGrammar catGr = nCheck.files.catGr;
+	NameCreator nCreator = new NameCreator(new File(args[0]));
+	CatGrammar catGr = nCreator.files.catGr;
 	CheckerFrame frame = new CheckerFrame(catGr);
 	frame.setCats(catGr.starts);
 	frame.setVisible(true);
