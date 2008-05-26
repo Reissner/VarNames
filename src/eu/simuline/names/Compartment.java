@@ -21,7 +21,7 @@ public class Compartment {
      * Creates a new <code>Compartment</code> instance.
      *
      */
-    public Compartment(String shortName,String name,String desc) {
+    public Compartment(String shortName, String name, String desc) {
 	this.shortName = shortName;
 	this.name = name;
 	this.desc = desc;
