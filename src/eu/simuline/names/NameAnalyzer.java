@@ -23,7 +23,7 @@ import java.util.List;
  * @author <a href="mailto:ernst@">Ernst Reissner</a>
  * @version 1.0
  */
-public class NameChecker {
+public class NameAnalyzer {
 
     class Pointer {
 	private int index;
@@ -54,19 +54,19 @@ public class NameChecker {
 
 	    Collection<Category> possCats;
 	    if (this.cat == null) {
-		possCats = NameChecker.this.catGr.starts;
+		possCats = NameAnalyzer.this.catGr.starts;
 	    } else {
-		possCats = NameChecker.this.catGr.rules.get(this.cat);
+		possCats = NameAnalyzer.this.catGr.rules.get(this.cat);
 	    }
 
 	    // try all categories 
 	    for (Category catCand : possCats) {
 		List<Compartment> comps = 
-		    NameChecker.this.catGr.cat2comps.get(catCand);
+		    NameAnalyzer.this.catGr.cat2comps.get(catCand);
 
 		// try all compartments of the category catCand 
 		for (Compartment comp : comps) {
-		    matches = NameChecker.this.name
+		    matches = NameAnalyzer.this.name
 			.startsWith(comp.shortName(), this.index);
 		    if (matches) {
 			newIndex = this.index + comp.shortName().length();
@@ -79,27 +79,85 @@ public class NameChecker {
 		    }
 		} // for comps 
 
-// 		if (NameChecker.this.catGr.stops.contains(cat)) {
+// 		if (NameAnalyzer.this.catGr.stops.contains(cat)) {
 // 		    // Here, the name may be finished. 
 // 		}
 
 	    } // for this.possCats
 	}
 
+	private Pointer getSingleSuccessor() {
+	    return this.successors.toArray(new Pointer[1])[0];
+	}
+
+	boolean isLinear() {
+	    switch (this.successors.size()) {
+		case 0:
+		    return true;
+		case 1:
+		    getSingleSuccessor().isLinear();
+		    return true;
+		default:
+		    return false;
+	    }
+	}
+
+	boolean isAllComplete() {
+
+	    if (this.successors.size() == 0) {
+		return NameAnalyzer.this.catGr.stops.contains(this.cat);
+	    }
+
+	    assert this.successors.size() > 0;
+	    for (Pointer succ : this.successors) {
+		if (!succ.isAllComplete()) {
+		    return false;
+		}
+	    }
+	    return true;
+
+	}
+
+	String linString() {
+	    StringBuilder res = new StringBuilder();
+	    if (this.cat != null) {
+		assert this.predecessor != null;
+		res.append("-");
+		res.append(this.comp.shortName());
+		if (NameAnalyzer.this.catGr.stops.contains(this.cat)) {
+		    res.append("|");
+		}
+	    } else {
+		assert this.predecessor == null;
+		res.append(">-");
+		// Here, the string representation is empty. 
+	    }
+	    switch (this.successors.size()) {
+		case 0:
+		    // append nothing
+		    break;
+		case 1:
+		    res.append(getSingleSuccessor().linString());
+		    break;
+		default:
+		    throw new IllegalStateException();
+	    }
+
+	    return res.toString();
+	}
+
 	public String toString() {
 	    StringBuilder res = new StringBuilder();
 	    if (this.cat != null) {
 		assert this.predecessor != null;
-		res.append("{");
-		res.append(this.cat);
-		res.append("}");
 		res.append("(");
+		res.append(this.cat);
+		res.append(":");
 		res.append(this.comp.shortName());
 		res.append(")");
-		if (NameChecker.this.catGr.stops.contains(this.cat)) {
+		if (NameAnalyzer.this.catGr.stops.contains(this.cat)) {
 		    res.append("|");
 		}
-
 	    } else {
 		assert this.predecessor == null;
 		// Here, the string representation is empty. 
@@ -115,10 +173,10 @@ public class NameChecker {
     private Pointer startPointer;
 
     /**
-     * Creates a new <code>NameChecker</code> instance.
+     * Creates a new <code>NameAnalyzer</code> instance.
      *
      */
-    public NameChecker(File rules, String name) 
+    public NameAnalyzer(File rules, String name) 
 	throws FileNotFoundException, IOException, ParseException {
 	this.catGr = new Files(rules).catGr;
 	this.name  = name;
@@ -132,18 +190,15 @@ public class NameChecker {
 		"and the name to be checked. ");
 	}
 
-	NameChecker nCheck = new NameChecker(new File(args[0]), args[1]);
+	NameAnalyzer nCheck = new NameAnalyzer(new File(args[0]), args[1]);
 	CatGrammar catGr = nCheck.catGr;
 	nCheck.startPointer.evolve();
 System.out.println("structure: "+nCheck.startPointer);
-	
+System.out.println("isLinear: "+nCheck.startPointer.isLinear());
+System.out.println("isLinear: "+nCheck.startPointer.linString());
+System.out.println("isAllComplete: "+nCheck.startPointer.isAllComplete());
 
 
-// 	NameCreator nCheck = new NameCreator(new File(args[0]));
-// 	CatGrammar catGr = nCheck.files.catGr;
-// 	CheckerFrame frame = new CheckerFrame(catGr);
-// 	frame.setCats(catGr.starts);
-// 	frame.setVisible(true);
 System.out.println("finished");
 
     }
