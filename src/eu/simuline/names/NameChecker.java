@@ -11,7 +11,11 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Describe class NameChecker here.
+ * Analyzes the structure of a name in view of a grammar. 
+ * This includes all possible interpretations of the name in the grammar. 
+ * In particular it can be seen if the name is correct 
+ * (if there is an interpretation) and if it can be interpreted uniquely. 
+ * The different interpretations also include free suffixes. 
  *
  *
  * Created: Mon May 26 20:18:35 2008
