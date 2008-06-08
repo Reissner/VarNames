@@ -195,7 +195,7 @@ public class NameAnalyzer {
     } // class Pointer 
 
 
-    private CatGrammar catGr;
+    private final CatGrammar catGr;
     private String name;
     private Pointer startPointer;
 
@@ -203,10 +203,31 @@ public class NameAnalyzer {
      * Creates a new <code>NameAnalyzer</code> instance.
      *
      */
-    public NameAnalyzer(CatGrammar catGr, String name) {
+    public NameAnalyzer(CatGrammar catGr) {
 	this.catGr = catGr;
+	//analyze(name);
+    }
+
+    void analyze(String name) {
 	this.name  = name;
 	this.startPointer = new Pointer();
+	this.startPointer.evolve();
+    }
+
+    String structure() {
+	return this.startPointer.toString();
+    }
+
+    String linStructure() {
+	return this.startPointer.linString();
+    }
+
+    boolean isLinear() {
+	return this.startPointer.isLinear();
+    }
+
+    boolean isAllComplete() {
+	return this.startPointer.isAllComplete();
     }
 
     public static void main(String[] args) throws Exception {
@@ -219,12 +240,12 @@ public class NameAnalyzer {
 	Files files = new Files(new File(args[0]));
 	CatGrammar catGr = files.catGr;
 
-	NameAnalyzer nCheck = new NameAnalyzer(catGr, args[1]);
-	nCheck.startPointer.evolve();
-System.out.println("structure: "+nCheck.startPointer);
-System.out.println("isLinear: "+nCheck.startPointer.isLinear());
-System.out.println("isLinear: "+nCheck.startPointer.linString());
-System.out.println("isAllComplete: "+nCheck.startPointer.isAllComplete());
+	NameAnalyzer nCheck = new NameAnalyzer(catGr);
+	nCheck.analyze(args[1]);
+System.out.println("structure: "+nCheck.structure());
+System.out.println("isLinear: "+nCheck.isLinear());
+System.out.println("isLinear: "+nCheck.linStructure());
+System.out.println("isAllComplete: "+nCheck.isAllComplete());
 
 
 System.out.println("finished");
