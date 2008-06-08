@@ -203,9 +203,8 @@ public class NameAnalyzer {
      * Creates a new <code>NameAnalyzer</code> instance.
      *
      */
-    public NameAnalyzer(File rules, String name) 
-	throws FileNotFoundException, IOException, ParseException {
-	this.catGr = new Files(rules).catGr;
+    public NameAnalyzer(CatGrammar catGr, String name) {
+	this.catGr = catGr;
 	this.name  = name;
 	this.startPointer = new Pointer();
     }
@@ -217,8 +216,10 @@ public class NameAnalyzer {
 		"and the name to be checked. ");
 	}
 
-	NameAnalyzer nCheck = new NameAnalyzer(new File(args[0]), args[1]);
-	CatGrammar catGr = nCheck.catGr;
+	Files files = new Files(new File(args[0]));
+	CatGrammar catGr = files.catGr;
+
+	NameAnalyzer nCheck = new NameAnalyzer(catGr, args[1]);
 	nCheck.startPointer.evolve();
 System.out.println("structure: "+nCheck.startPointer);
 System.out.println("isLinear: "+nCheck.startPointer.isLinear());
