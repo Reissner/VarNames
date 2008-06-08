@@ -10,6 +10,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
+import java.io.File;
+
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JLabel;
@@ -22,14 +30,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
-
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
-import java.io.File;
+import javax.swing.JSeparator;
 
 /**
  * Describe class CreatorAnalyzerFrame here.
@@ -60,7 +61,12 @@ public class CreatorAnalyzerFrame extends JFrame {
     // null if none is selected 
     JTextField nameField;
 
-    JLabel statusLabel;
+    JLabel creatorStatusLabel;
+
+    JLabel structLabel;
+    JLabel linearLabel;
+
+    JLabel analyzerStatusLabel;
 
 
     /**
@@ -70,7 +76,8 @@ public class CreatorAnalyzerFrame extends JFrame {
     public CreatorAnalyzerFrame(CatGrammar catGr) {
 	super("Checker Frame");
 	this.catGr = catGr;
-	this.creator = new NameCreator(catGr);
+	this.creator  = new NameCreator (catGr);
+	this.analyzer = new NameAnalyzer(catGr);
 
 
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,6 +89,8 @@ public class CreatorAnalyzerFrame extends JFrame {
 	Container content = getContentPane();
 	content.setLayout(new BoxLayout(content,BoxLayout.Y_AXIS));
 
+
+	add(new JSeparator());
 	Box partialNameB = Box.createHorizontalBox();
 	partialNameB.add(new JLabel("partial name: "));
 	// setText(this.partialName)
@@ -90,6 +99,15 @@ public class CreatorAnalyzerFrame extends JFrame {
 	add(partialNameB);
 	add(Box.createVerticalGlue());
 	add(Box.createVerticalStrut(40));
+
+
+
+	add(new JSeparator());
+	Box headlineC = Box.createHorizontalBox();
+	headlineC.add(new JLabel("Creator"));
+	headlineC.add(Box.createHorizontalGlue());
+	add(headlineC);
+
 
 	Box catsCmptms = Box.createHorizontalBox();
 	Box categories = Box.createVerticalBox();
@@ -156,9 +174,41 @@ public class CreatorAnalyzerFrame extends JFrame {
 	add(Box.createVerticalStrut(40));
 
 
-this.statusLabel = new JLabel();
-	add(this.statusLabel);
-	reset();
+this.creatorStatusLabel = new JLabel();
+	add(this.creatorStatusLabel);
+
+
+	add(new JSeparator());
+
+
+
+	Box headlineA = Box.createHorizontalBox();
+	headlineA.add(new JLabel("Analyzer"));
+	headlineA.add(Box.createHorizontalGlue());
+	add(headlineA);
+
+
+	Box structure = Box.createHorizontalBox();
+	structure.add(new JLabel("Structure: "));
+	this.structLabel = new JLabel();
+	structure.add(this.structLabel);
+	structure.add(Box.createHorizontalGlue());
+	add(structure);
+
+	Box linear = Box.createHorizontalBox();
+	linear.add(new JLabel("Linear: "));
+	this.linearLabel = new JLabel();
+	linear.add(this.linearLabel);
+	linear.add(Box.createHorizontalGlue());
+	add(linear);
+
+
+	Box analyzerStatus = Box.createHorizontalBox();
+	this.analyzerStatusLabel = new JLabel();
+	add(analyzerStatus);
+
+
+	resetCreator();
 
 	setSize(800,300);
 	//this.frame.pack();
@@ -168,7 +218,8 @@ this.statusLabel = new JLabel();
 
     void setMenuBar() {//Actions actions
 	JMenuBar menubar = new JMenuBar();
-	menubar.add(new JMenuItem(new ActionCreate()));
+	menubar.add(new JMenuItem(new ActionCreate ()));
+	menubar.add(new JMenuItem(new ActionAnalyze()));
 	setJMenuBar(menubar);
     }
 
@@ -177,28 +228,64 @@ this.statusLabel = new JLabel();
 
 	private static final long serialVersionUID = -589L;
 	ActionCreate() {
-	    super("Run",GifResource.getIcon(ExecuteProject.class));
-	    putValue(SHORT_DESCRIPTION, "prepares new name. ");
-            putValue(MNEMONIC_KEY, KeyEvent.VK_R);
+	    super("Create",GifResource.getIcon(ExecuteProject.class));
+	    putValue(SHORT_DESCRIPTION, "creates new name. ");
+            putValue(MNEMONIC_KEY, KeyEvent.VK_C);
             putValue(ACCELERATOR_KEY,
-		     KeyStroke.getKeyStroke(KeyEvent.VK_R,
+		     KeyStroke.getKeyStroke(KeyEvent.VK_C,
 					    ActionEvent.CTRL_MASK));
 	}
 	public void actionPerformed(ActionEvent event) {
-System.out.println("new name");
-reset();
+System.out.println("create new name");
+resetCreator();
 	    
 	}
-    } // class StartAction 
+    } // class ActionCreate 
 
-    void reset() {
+    class ActionAnalyze extends AbstractAction {
+
+	private static final long serialVersionUID = -589L;
+	ActionAnalyze() {
+	    super("Analyze",GifResource.getIcon(ExecuteProject.class));
+	    putValue(SHORT_DESCRIPTION, "analyzes given name. ");
+            putValue(MNEMONIC_KEY, KeyEvent.VK_A);
+            putValue(ACCELERATOR_KEY,
+		     KeyStroke.getKeyStroke(KeyEvent.VK_A,
+					    ActionEvent.CTRL_MASK));
+	}
+	public void actionPerformed(ActionEvent event) {
+System.out.println("analyze new name");
+analyze();
+	}
+    } // class ActionAnalyze 
+
+    void resetCreator() {
 	this.nameField.setText(this.creator.reset());
 	setCats(this.catGr.starts);
 	if (this.catGr.stops.containsAll(this.catGr.starts)) {
-	    this.statusLabel.setText(STATE_COMPLETE);
+	    this.creatorStatusLabel.setText(STATE_COMPLETE);
 	} else {
-	    this.statusLabel.setText(STATE_NOT_COMPLETE);
+	    this.creatorStatusLabel.setText(STATE_NOT_COMPLETE);
 	}
+
+	this.structLabel.setText("");
+	this.linearLabel.setText("");
+	this.analyzerStatusLabel.setText("");
+    }
+
+    void analyze() {
+	this.analyzer.analyze(this.nameField.getText());
+	this.structLabel.setText(this.analyzer.structure());
+	if (this.analyzer.isLinear()) {
+	    this.linearLabel.setText(this.analyzer.linStructure());
+	} else {
+	    this.linearLabel.setText("");
+	}
+
+	this.analyzerStatusLabel.setText((this.analyzer.isLinear() 
+					  ? "linear " : "       ") + 
+					 (this.analyzer.isAllComplete() 
+					  ? "  complete" : "incomplete"));
     }
 
     void setCat(Category newCat) {
@@ -210,9 +297,9 @@ reset();
 	this.nameField.setText(this.creator.add(comp));
 
 	if (this.creator.isStop()) {
-	    this.statusLabel.setText(STATE_COMPLETE);
+	    this.creatorStatusLabel.setText(STATE_COMPLETE);
 	} else {
-	    this.statusLabel.setText(STATE_NOT_COMPLETE);
+	    this.creatorStatusLabel.setText(STATE_NOT_COMPLETE);
 	}
 
 	Collection<Category> nextCats = this.creator.nextCats();
@@ -258,13 +345,10 @@ System.out.println("add: "+cand);
 	}
 
 	Files files = new Files(new File(args[0]));
-	//NameCreator nCreator = new NameCreator(new File(args[0]));
 	CatGrammar catGr = files.catGr;
 	CreatorAnalyzerFrame frame = new CreatorAnalyzerFrame(catGr);
 System.out.println("finished");
 
     }
-
-
 
 }
