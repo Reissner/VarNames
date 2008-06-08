@@ -21,15 +21,16 @@ public class NameCreator {
 
     private CatGrammar catGr;
     private Category currCat;
+    private String partialName;
 
     /**
      * Creates a new <code>NameCreator</code> instance.
      *
      */
     public NameCreator(CatGrammar catGr) {
-	//this.files = new Files(rules);
 	this.catGr = catGr;
 	this.currCat = null;
+	reset();
     }
 
 
@@ -48,5 +49,12 @@ System.out.println("setcomp:       currCat: "+this.currCat);
 	return this.catGr.nextCats(this.currCat);
     }
 
+    String reset() {
+	return this.partialName = "";
+    }
+
+    String add(Compartment comp) {
+	return this.partialName += comp.shortName();
+    }
 
 }
