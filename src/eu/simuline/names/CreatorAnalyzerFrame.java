@@ -52,7 +52,7 @@ public class CreatorAnalyzerFrame extends JFrame {
     DefaultComboBoxModel combComp;
 
 
-    NameCreator creator;
+    NameCreator  creator;
     NameAnalyzer analyzer;
 
     CatGrammar catGr;
@@ -261,8 +261,6 @@ System.out.println("add: "+cand);
 	//NameCreator nCreator = new NameCreator(new File(args[0]));
 	CatGrammar catGr = files.catGr;
 	CreatorAnalyzerFrame frame = new CreatorAnalyzerFrame(catGr);
-	frame.setCats(catGr.starts);
-	frame.setVisible(true);
 System.out.println("finished");
 
     }
