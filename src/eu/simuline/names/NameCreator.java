@@ -3,9 +3,8 @@ package eu.simuline.names;
 
 import eu.simuline.names.parser.ParseException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.util.List;
+import java.util.Collection;
 
 
 /**
@@ -20,32 +19,34 @@ import java.io.IOException;
 public class NameCreator {
 
 
-    private Files files;
+    private CatGrammar catGr;
+    private Category currCat;
 
     /**
      * Creates a new <code>NameCreator</code> instance.
      *
      */
-    public NameCreator(File rules) 
-	throws FileNotFoundException, IOException, ParseException {
-	this.files = new Files(rules);	    
+    public NameCreator(CatGrammar catGr) {
+	//this.files = new Files(rules);
+	this.catGr = catGr;
+	this.currCat = null;
     }
 
 
-
-    public static void main(String[] args) throws Exception {
-	if (args.length != 1) {
-	   throw new IllegalArgumentException
-	       ("Usage: the name of the rules file. ");
-	}
-
-	NameCreator nCreator = new NameCreator(new File(args[0]));
-	CatGrammar catGr = nCreator.files.catGr;
-	CheckerFrame frame = new CheckerFrame(catGr);
-	frame.setCats(catGr.starts);
-	frame.setVisible(true);
-System.out.println("finished");
-
+    List<Compartment> setNewCat(Category newCat) {
+	this.currCat = newCat;
+	return this.catGr.cat2comps(this.currCat);
     }
+
+    boolean isStop() {
+System.out.println("setcomp:       currCat: "+this.currCat);
+	return this.catGr.isStop(this.currCat);
+    }
+
+    Collection<Category> nextCats() {
+	System.out.println("nextCats: "+this.catGr.nextCats(this.currCat));
+	return this.catGr.nextCats(this.currCat);
+    }
+
 
 }
