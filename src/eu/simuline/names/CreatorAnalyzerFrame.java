@@ -2,10 +2,13 @@ package eu.simuline.names;
 
 import eu.simuline.util.GifResource;
 
+import org.javalobby.icons20x20.ExecuteProject;
+
 import java.awt.Container;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -18,19 +21,18 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 import java.util.Set;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.javalobby.icons20x20.ExecuteProject;
-import java.awt.event.KeyEvent;
-import javax.swing.KeyStroke;
-import java.util.ArrayList;
+import java.io.File;
 
 /**
- * Describe class CheckerFrame here.
+ * Describe class CreatorAnalyzerFrame here.
  *
  *
  * Created: Tue Apr 15 19:49:36 2008
@@ -38,7 +40,7 @@ import java.util.ArrayList;
  * @author <a href="mailto:ernst@">Ernst Reissner</a>
  * @version 1.0
  */
-public class CheckerFrame extends JFrame {
+public class CreatorAnalyzerFrame extends JFrame {
 
     private static final long serialVersionUID = -2479143000061671589L;
 
@@ -48,9 +50,13 @@ public class CheckerFrame extends JFrame {
 
     DefaultComboBoxModel combCat;
     DefaultComboBoxModel combComp;
+
+
+    NameCreator creator;
+    NameAnalyzer analyzer;
+
     CatGrammar catGr;
     // null if none is selected 
-    Category currCat;
     String partialName;
     JTextField nameField;
 
@@ -58,17 +64,19 @@ public class CheckerFrame extends JFrame {
 
 
     /**
-     * Creates a new <code>CheckerFrame</code> instance.
+     * Creates a new <code>CreatorAnalyzerFrame</code> instance.
      *
      */
-    public CheckerFrame(CatGrammar catGr) {
+    public CreatorAnalyzerFrame(CatGrammar catGr) {
 	super("Checker Frame");
 	this.catGr = catGr;
+	this.creator = new NameCreator(catGr);
+
+
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	setMenuBar();//actions
 
-	this.currCat = null;
 
 
 	Container content = getContentPane();
@@ -95,7 +103,8 @@ public class CheckerFrame extends JFrame {
 		    switch (e.getStateChange()) {
 			case ItemEvent.SELECTED:
 			    System.out.println("1selected: "+e.getItem());
-			    CheckerFrame.this.setCat((Category)e.getItem());
+			    CreatorAnalyzerFrame.this
+				.setCat((Category)e.getItem());
 			    break;
 			case ItemEvent.DESELECTED:
 			    System.out.println("1deselected: ");
@@ -126,7 +135,7 @@ public class CheckerFrame extends JFrame {
 			    }
 
 			    System.out.println("2selected-: "+e.getItem());
-			    CheckerFrame.this.setComp
+			    CreatorAnalyzerFrame.this.setComp
 				((Compartment)e.getItem());
 			    break;
 			case ItemEvent.DESELECTED:
@@ -159,15 +168,15 @@ this.statusLabel = new JLabel();
 
     void setMenuBar() {//Actions actions
 	JMenuBar menubar = new JMenuBar();
-	menubar.add(new JMenuItem(new StartAction()));
+	menubar.add(new JMenuItem(new ActionCreate()));
 	setJMenuBar(menubar);
     }
 
 
-    class StartAction extends AbstractAction {
+    class ActionCreate extends AbstractAction {
 
 	private static final long serialVersionUID = -589L;
-	StartAction() {
+	ActionCreate() {
 	    super("Run",GifResource.getIcon(ExecuteProject.class));
 	    putValue(SHORT_DESCRIPTION, "prepares new name. ");
             putValue(MNEMONIC_KEY, KeyEvent.VK_R);
@@ -196,35 +205,25 @@ reset();
     }
 
     void setCat(Category newCat) {
-	this.currCat = newCat;
-	List<Compartment> compsOfCat = this.catGr.cat2comps(this.currCat);
+	List<Compartment> compsOfCat = this.creator.setNewCat(newCat);
 	this.setComps(compsOfCat);
-// 	if (this.catGr.isStop(this.currCat)) {
-// 	    this.statusLabel.setText(STATE_COMPLETE);
-// 	} else {
-// 	    this.statusLabel.setText(STATE_NOT_COMPLETE);
-// 	}
-
     }
 
     void setComp(Compartment comp) {
 	this.partialName += comp.shortName();
 	this.nameField.setText(this.partialName);
 
-System.out.println("setcomp:       currCat: "+this.currCat);
-//System.out.println("setcomp:       catGr: "+this.catGr);
-	if (this.catGr.isStop(this.currCat)) {
+	if (this.creator.isStop()) {
 	    this.statusLabel.setText(STATE_COMPLETE);
 	} else {
 	    this.statusLabel.setText(STATE_NOT_COMPLETE);
 	}
 
 
-	System.out.println("nextCats: "+this.catGr.nextCats(this.currCat));
-	Collection<Category> nextCats = this.catGr.nextCats(this.currCat);
+	Collection<Category> nextCats = this.creator.nextCats();
 	if (nextCats.isEmpty()) {
 	    // must be end-category 
-	    if (!this.catGr.isStop(this.currCat)) {
+	    if (!this.creator.isStop()) {
 		// **** this shall be tested earlier. 
 		throw new IllegalStateException
 		    ("Found category whithout successors which is no stopcat");
@@ -236,8 +235,6 @@ System.out.println("setcomp:       currCat: "+this.currCat);
 	}
 
 	this.setCats(nextCats);
-//this.currCat = null;
-//this.currCat = (Category)e.getItem();
     }
 
     void setCats(Collection<Category> cats) {
@@ -258,6 +255,23 @@ System.out.println("add: "+cand);
 	    this.combComp.addElement(cand);
 	}
     }
+
+    public static void main(String[] args) throws Exception {
+	if (args.length != 1) {
+	   throw new IllegalArgumentException
+	       ("Usage: the name of the rules file. ");
+	}
+
+	Files files = new Files(new File(args[0]));
+	//NameCreator nCreator = new NameCreator(new File(args[0]));
+	CatGrammar catGr = files.catGr;
+	CreatorAnalyzerFrame frame = new CreatorAnalyzerFrame(catGr);
+	frame.setCats(catGr.starts);
+	frame.setVisible(true);
+System.out.println("finished");
+
+    }
+
 
 
 }
