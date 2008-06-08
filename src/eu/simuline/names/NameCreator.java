@@ -19,7 +19,7 @@ import java.util.Collection;
 public class NameCreator {
 
 
-    private CatGrammar catGr;
+    private final CatGrammar catGr;
     private Category currCat;
     private String partialName;
 
