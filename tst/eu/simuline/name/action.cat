@@ -1,0 +1,8 @@
+Ind	: indication
+Msg	: message 
+Al	: alarm 
+Rd	: load-reduction 
+Sd	: shutdown 
+Dsng	: disengage 
+Swo	: switch-over 
+Qswo	: quick-switch-over

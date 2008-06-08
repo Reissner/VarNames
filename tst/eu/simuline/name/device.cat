@@ -1,0 +1,11 @@
+Eng	: Engine  
+Tc	: Turbo-Charger 
+Ic	: Intercooler 
+Cyl	: Cylinder 
+Comp	: Compartment 
+MBear	: Main-Bearing 
+Pmp	: Pump 
+Vlv	: Valve 
+Flp	: Flap
+Mot	: Motor		// do not mix up with engine! 
+Sens	: Sensor

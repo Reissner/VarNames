@@ -1,0 +1,12 @@
+//this is the rules file. 
+//
+Package {
+|-> action  --> ( quantityWithMedium quantityWithDev )
+|-> quantityWithMedium --> ( medium ) 
+|-> quantityWithDev    --> ( device ) 
+medium                 --> ( device )
+device --> ( parameterAttr ) ->|
+parameterAttr --> ( condition ) ->|
+condition --> ( ) ->|
+//comment
+} // Package 
