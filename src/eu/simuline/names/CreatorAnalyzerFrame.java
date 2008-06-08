@@ -56,8 +56,8 @@ public class CreatorAnalyzerFrame extends JFrame {
     NameAnalyzer analyzer;
 
     CatGrammar catGr;
+
     // null if none is selected 
-    String partialName;
     JTextField nameField;
 
     JLabel statusLabel;
@@ -192,16 +192,13 @@ reset();
     } // class StartAction 
 
     void reset() {
-	this.partialName = "";
-	this.nameField.setText(this.partialName);
+	this.nameField.setText(this.creator.reset());
 	setCats(this.catGr.starts);
 	if (this.catGr.stops.containsAll(this.catGr.starts)) {
 	    this.statusLabel.setText(STATE_COMPLETE);
 	} else {
 	    this.statusLabel.setText(STATE_NOT_COMPLETE);
 	}
-
-
     }
 
     void setCat(Category newCat) {
@@ -210,15 +207,13 @@ reset();
     }
 
     void setComp(Compartment comp) {
-	this.partialName += comp.shortName();
-	this.nameField.setText(this.partialName);
+	this.nameField.setText(this.creator.add(comp));
 
 	if (this.creator.isStop()) {
 	    this.statusLabel.setText(STATE_COMPLETE);
 	} else {
 	    this.statusLabel.setText(STATE_NOT_COMPLETE);
 	}
-
 
 	Collection<Category> nextCats = this.creator.nextCats();
 	if (nextCats.isEmpty()) {
