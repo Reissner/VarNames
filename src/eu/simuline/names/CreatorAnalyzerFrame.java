@@ -3,6 +3,11 @@ package eu.simuline.names;
 import eu.simuline.util.GifResource;
 
 import org.javalobby.icons20x20.ExecuteProject;
+import org.javalobby.icons20x20.Open;
+import org.javalobby.icons20x20.New;
+import org.javalobby.icons20x20.Magnify;
+import org.javalobby.icons20x20.RotCCDown;
+import org.javalobby.icons20x20.RotCCLeft;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -17,6 +22,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -56,7 +63,7 @@ public class CreatorAnalyzerFrame extends JFrame {
     NameCreator  creator;
     NameAnalyzer analyzer;
 
-    CatGrammar catGr;
+    Files files;
 
     // null if none is selected 
     JTextField nameField;
@@ -73,11 +80,14 @@ public class CreatorAnalyzerFrame extends JFrame {
      * Creates a new <code>CreatorAnalyzerFrame</code> instance.
      *
      */
-    public CreatorAnalyzerFrame(CatGrammar catGr) {
+    public CreatorAnalyzerFrame(Files files) {
 	super("Checker Frame");
-	this.catGr = catGr;
-	this.creator  = new NameCreator (catGr);
-	this.analyzer = new NameAnalyzer(catGr);
+	this.files = files;
+	reloadGrammar();
+// // **** here, a popup must provide the error messages. 
+// 	this.files.reload();
+// 	this.creator  = new NameCreator (this.files.catGr);
+// 	this.analyzer = new NameAnalyzer(this.files.catGr);
 
 
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -204,7 +214,10 @@ this.creatorStatusLabel = new JLabel();
 
 
 	Box analyzerStatus = Box.createHorizontalBox();
+	analyzerStatus.add(new JLabel("Status: "));
 	this.analyzerStatusLabel = new JLabel();
+	analyzerStatus.add(this.analyzerStatusLabel);
+	analyzerStatus.add(Box.createHorizontalGlue());
 	add(analyzerStatus);
 
 
@@ -220,15 +233,33 @@ this.creatorStatusLabel = new JLabel();
 	JMenuBar menubar = new JMenuBar();
 	menubar.add(new JMenuItem(new ActionCreate ()));
 	menubar.add(new JMenuItem(new ActionAnalyze()));
+	menubar.add(new JMenuItem(new ActionReLoadGrammar()));
 	setJMenuBar(menubar);
     }
 
+    class ActionReLoadGrammar extends AbstractAction {
+
+	private static final long serialVersionUID = -589L;
+	ActionReLoadGrammar() {
+	    super("Reload Grammar",GifResource.getIcon(RotCCLeft.class));
+	    putValue(SHORT_DESCRIPTION, "reloads the grammar. ");
+            putValue(MNEMONIC_KEY, KeyEvent.VK_R);
+            putValue(ACCELERATOR_KEY,
+		     KeyStroke.getKeyStroke(KeyEvent.VK_R,
+					    ActionEvent.CTRL_MASK));
+	}
+	public void actionPerformed(ActionEvent event) {
+System.out.println("(re)load grammar");
+	    reloadGrammar();
+	    
+	}
+    } // class ActionReLoadGrammar 
 
     class ActionCreate extends AbstractAction {
 
 	private static final long serialVersionUID = -589L;
 	ActionCreate() {
-	    super("Create",GifResource.getIcon(ExecuteProject.class));
+	    super("Create",GifResource.getIcon(New.class));
 	    putValue(SHORT_DESCRIPTION, "creates new name. ");
             putValue(MNEMONIC_KEY, KeyEvent.VK_C);
             putValue(ACCELERATOR_KEY,
@@ -237,7 +268,7 @@ this.creatorStatusLabel = new JLabel();
 	}
 	public void actionPerformed(ActionEvent event) {
 System.out.println("create new name");
-resetCreator();
+	    resetCreator();
 	    
 	}
     } // class ActionCreate 
@@ -246,7 +277,7 @@ resetCreator();
 
 	private static final long serialVersionUID = -589L;
 	ActionAnalyze() {
-	    super("Analyze",GifResource.getIcon(ExecuteProject.class));
+	    super("Analyze",GifResource.getIcon(Magnify.class));
 	    putValue(SHORT_DESCRIPTION, "analyzes given name. ");
             putValue(MNEMONIC_KEY, KeyEvent.VK_A);
             putValue(ACCELERATOR_KEY,
@@ -255,18 +286,25 @@ resetCreator();
 	}
 	public void actionPerformed(ActionEvent event) {
 System.out.println("analyze new name");
-analyze();
+	    analyze();
 	}
     } // class ActionAnalyze 
 
+    void reloadGrammar() {
+// **** here, a popup must provide the error messages. 
+	this.files.reload();
+	this.creator  = new NameCreator (this.files.catGr);
+	this.analyzer = new NameAnalyzer(this.files.catGr);
+    }
+
     void resetCreator() {
 	this.nameField.setText(this.creator.reset());
-	setCats(this.catGr.starts);
-	if (this.catGr.stops.containsAll(this.catGr.starts)) {
-	    this.creatorStatusLabel.setText(STATE_COMPLETE);
-	} else {
-	    this.creatorStatusLabel.setText(STATE_NOT_COMPLETE);
-	}
+	setCats(this.files.catGr.starts);
+// 	if (this.catGr.stops.containsAll(this.catGr.starts)) {
+// 	    this.creatorStatusLabel.setText(STATE_COMPLETE);
+// 	} else {
+ 	    this.creatorStatusLabel.setText(STATE_NOT_COMPLETE);
+// 	}
 
 	this.structLabel.setText("");
 	this.linearLabel.setText("");
@@ -274,7 +312,15 @@ analyze();
     }
 
     void analyze() {
-	this.analyzer.analyze(this.nameField.getText());
+	NameAnalyzer.State state = 
+	    this.analyzer.analyze(this.nameField.getText());
+	if (state != NameAnalyzer.State.Matches) {
+	    this.structLabel.setText("");
+	    this.linearLabel.setText("");
+	    this.analyzerStatusLabel.setText(state.toString());
+	    return;
+ 	}
+
 	this.structLabel.setText(this.analyzer.structure());
 	if (this.analyzer.isLinear()) {
 	    this.linearLabel.setText(this.analyzer.linStructure());
@@ -345,8 +391,8 @@ System.out.println("add: "+cand);
 	}
 
 	Files files = new Files(new File(args[0]));
-	CatGrammar catGr = files.catGr;
-	CreatorAnalyzerFrame frame = new CreatorAnalyzerFrame(catGr);
+	//CatGrammar catGr = files.catGr;
+	CreatorAnalyzerFrame frame = new CreatorAnalyzerFrame(files);
 System.out.println("finished");
 
     }

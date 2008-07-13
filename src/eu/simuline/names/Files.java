@@ -31,7 +31,7 @@ public class Files {
     private final static String END_CAT  = ".cat";
     private final static String END_CATD = ".cat$";
 
-    File rules;
+    final File rules;
     List<File> catFiles;
     CatGrammar catGr;
 
@@ -42,6 +42,10 @@ public class Files {
     public Files(File rules) 
 	throws FileNotFoundException, IOException, ParseException {
 	this.rules = rules;
+	//reload();
+    }
+
+    List<String> reload() {//throws FileNotFoundException, IOException {
 
 	if (!(this.rules.isFile() && this.rules.canRead())) {
 	    throw new IllegalArgumentException
@@ -70,26 +74,56 @@ public class Files {
 
 System.out.println("catFile2cat: "+catFile2cat);
 
-
-
-	FileReader rd = new FileReader(this.rules);
-
+	List<String> excMsgs = new ArrayList<String>();
+	FileReader rd;
 	RulesParser rParser = new RulesParser((Reader)null);
+
+	try {
+	rd = new FileReader(this.rules);
+
 	rParser.ReInit(rd);
-	this.catGr = rParser.parseRules(catFile2cat.values());
+	    this.catGr = rParser.parseRules(catFile2cat.values());
+	} catch (Exception e) {
+	    excMsgs.add(e.getMessage());
+	}
+
+	
 
 
 
 	List<Compartment> lComp;
 	for (File cand : catFile2cat.keySet()) {
 System.out.println("cand: "+cand);
-	    rd = new FileReader(cand);
-	    rParser.ReInit(rd);
-	    lComp = rParser.parseCategory();
+	    try {
+		rd = new FileReader(cand);
+		rParser.ReInit(rd);
+		lComp = rParser.parseCategory();
 System.out.println("lComp: "+lComp);
+	    } catch (Exception e) {
+		excMsgs.add(e.getMessage());
+		continue;
+	    }
 //****new cat: bad 
-	    this.catGr.map(catFile2cat.get(cand),lComp);
+	    try {
+		this.catGr.map(catFile2cat.get(cand),lComp);
+	    } catch (ParseException e) {
+		excMsgs.add(e.getMessage());
+	    }
 	}
+	try {
+	    this.catGr.check();
+	} catch (ParseException e) {
+	    excMsgs.add(e.getMessage());
+	}
+
+	if (excMsgs.isEmpty()) {
+	    System.out.println("Successfully parsed grammar. ");
+	} else {
+	    System.out.println("Parsing the grammar found failures: \n"
+			       +excMsgs);
+	}
+
+	return excMsgs;
 
 /*
 

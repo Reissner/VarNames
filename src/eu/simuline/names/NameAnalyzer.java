@@ -26,6 +26,10 @@ import java.util.List;
  */
 public class NameAnalyzer {
 
+    enum State {
+	Matches, Incomplete, NoMatch;
+    } // enum State 
+
     class Pointer {
 	private int index;
 	private Category cat;
@@ -48,13 +52,15 @@ public class NameAnalyzer {
 	    this(0, null, null, null);
 	}
 
-	void evolve() {
+	// returns success 
+	State evolve() {
 	    boolean matches;
 	    int newIndex;
 	    Pointer newPointer;
 
 	    Collection<Category> possCats;
 	    if (this.cat == null) {
+		// the first compartment 
 		possCats = NameAnalyzer.this.catGr.starts;
 	    } else {
 		possCats = NameAnalyzer.this.catGr.rules.get(this.cat);
@@ -62,8 +68,9 @@ public class NameAnalyzer {
 
 	    // try all categories 
 	    for (Category catCand : possCats) {
+		assert catCand != null;// for creating new Pointer 
 		List<Compartment> comps = 
-		    NameAnalyzer.this.catGr.cat2comps.get(catCand);
+		    NameAnalyzer.this.catGr.comps(catCand);
 
 		// try all compartments of the category catCand 
 		for (Compartment comp : comps) {
@@ -75,8 +82,9 @@ public class NameAnalyzer {
 						 catCand, 
 						 comp, 
 						 this);
-			newPointer.evolve();
-			this.successors.add(newPointer);
+			if (State.Matches == newPointer.evolve()) {
+			    this.successors.add(newPointer);
+			}
 		    }
 		} // for comps 
 
@@ -88,13 +96,23 @@ public class NameAnalyzer {
 
 	    if (this.successors.isEmpty()) {
 		// Here, no category was found at all. 
+		if (this.cat == null) {
+		    // did not find a start category 
+		    return State.NoMatch;
+		}
+		if (!NameAnalyzer.this.catGr.isStop(this.cat)) {
+		    // cannot add a free suffix: allowed only after end's 
+		    return State.NoMatch;
+		}
+
+
 		newPointer = new Pointer(NameAnalyzer.this.name.length(), 
 					 CatGrammar.FREE_CAT, 
 					 null, 
 					 this);
 		this.successors.add(newPointer);
-
 	    }
+	    return State.Matches;
 	}
 
 	private Pointer getSingleSuccessor() {
@@ -114,7 +132,7 @@ public class NameAnalyzer {
 	}
 
 	private boolean isStop() {
-	    return NameAnalyzer.this.catGr.stops.contains(this.cat); 
+	    return NameAnalyzer.this.catGr.isStop(this.cat); 
 	}
 
 	private boolean isFree() {
@@ -147,7 +165,7 @@ public class NameAnalyzer {
 		res.append(NameAnalyzer.this.name
 			   .substring(this.predecessor.index,this.index));
 //		res.append(this.comp.shortName());
-		if (NameAnalyzer.this.catGr.stops.contains(this.cat)) {
+		if (NameAnalyzer.this.catGr.isStop(this.cat)) {
 		    res.append("|");
 		}
 	    } else {
@@ -182,7 +200,7 @@ public class NameAnalyzer {
 			   .substring(this.predecessor.index,this.index));
 //		res.append(this.comp.shortName());
 		res.append(")");
-		if (NameAnalyzer.this.catGr.stops.contains(this.cat)) {
+		if (NameAnalyzer.this.catGr.isStop(this.cat)) {
 		    res.append("|");
 		}
 	    } else {
@@ -208,10 +226,10 @@ public class NameAnalyzer {
 	//analyze(name);
     }
 
-    void analyze(String name) {
+   State analyze(String name) {
 	this.name  = name;
 	this.startPointer = new Pointer();
-	this.startPointer.evolve();
+	return this.startPointer.evolve();
     }
 
     String structure() {

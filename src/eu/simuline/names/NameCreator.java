@@ -29,7 +29,7 @@ public class NameCreator {
      */
     public NameCreator(CatGrammar catGr) {
 	this.catGr = catGr;
-	this.currCat = null;
+//	this.currCat = null;
 	reset();
     }
 
@@ -50,6 +50,7 @@ System.out.println("setcomp:       currCat: "+this.currCat);
     }
 
     String reset() {
+	this.currCat = null;
 	return this.partialName = "";
     }
 

@@ -36,15 +36,45 @@ public class CatGrammar {
 
     public final static Category FREE_CAT = new Category("FREE_CAT");
 
-    Collection<Category> cats;
+    /* --------------------------------------------------------------------- *
+     * fields.                                                               *
+     * --------------------------------------------------------------------- */
+
+    private Collection<Category> cats;
     Map<Category,Collection<Category>> rules;
-    Set<Category         > starts;
-    Set<Category         > stops;
-    Map<Category,List<Compartment>> cat2comps;
 
     /**
-     * Creates a new <code>CatGrammar</code> instance.
+     * The subset of {@link #cats} which may serve as start categories. 
+     * These are the categories a name may start with. 
+     * When this grammar is created, this set is empty 
+     * and only {@link #addStart(Category)} allows to add a start category. 
+     * It also keeps track of validity. 
+     */
+            Set<Category         > starts;
+    /**
+     * The subset of {@link #cats} which may serve as stop categories. 
+     * These are the categories a name may stop with. 
+     * Also only stop categories may be followed by a free suffix. 
+     * When this grammar is created, this set is empty 
+     * and only {@link #addStop(Category)} allows to add a start category. 
+     * It also keeps track of validity. 
+     */
+    private Set<Category         > stops;
+    private Map<Category,List<Compartment>> cat2comps;
+
+    /* --------------------------------------------------------------------- *
+     * constructors.                                                         *
+     * --------------------------------------------------------------------- */
+
+    /**
+     * Creates a new <code>CatGrammar</code> instance 
+     * with the given categories but without rules, 
+     * without starts and without stops. 
+     * For each category the set of compartments is empty. 
      *
+     * @param cats 
+     *    the collection of categories 
+     *    which shall serve as foundation for this grammar. 
      */
     public CatGrammar(Collection<Category> cats) {
 	this.cats = cats;
@@ -54,11 +84,30 @@ public class CatGrammar {
 	this.cat2comps = new HashMap<Category,List<Compartment>>();
     }
 
+    /* --------------------------------------------------------------------- *
+     * methods                                                               *
+     * --------------------------------------------------------------------- */
+
+    /**
+     * Adds <code>targetC</code> 
+     * to the set {@link #starts} of start categories. 
+     *
+     * @param targetC 
+     *    a <code>Category</code> which is supposed to be in {@link #cats}. 
+     * @throws ParseException 
+     *    if 
+     *    <ul>
+     *    <li>
+     *    either <code>targetC</code> is not in {@link #cats}. 
+     *    <li>
+     *    either <code>targetC</code> was tried to be added more than once. 
+     *    </ul>
+     */
     public void addStart(Category targetC) throws ParseException {
 
 	if (!this.cats.contains(targetC)) {
 	    throw new ParseException
-		("Target \"" + targetC + "\"is no category. ");
+		("Target \"" + targetC + "\"is no valid category. ");
 	}
 
 	boolean added = this.starts.add(targetC);
@@ -68,10 +117,25 @@ public class CatGrammar {
 	}
     }
 
+    /**
+     * Adds <code>sourceC</code> 
+     * to the set {@link #starts} of stop categories. 
+     *
+     * @param sourceC 
+     *    a <code>Category</code> which is supposed to be in {@link #cats}. 
+     * @throws ParseException 
+     *    if 
+     *    <ul>
+     *    <li>
+     *    either <code>sourceC</code> is not in {@link #cats}. 
+     *    <li>
+     *    either <code>sourceC</code> was tried to be added more than once. 
+     *    </ul>
+     */
     public void addStop(Category sourceC) throws ParseException {
 	if (!this.cats.contains(sourceC)) {
 	    throw new ParseException
-		("Source \"" + sourceC + "\"is no category. ");
+		("Source \"" + sourceC + "\"is no valid category. ");
 	}
 
 	boolean added = this.stops.add(sourceC);
@@ -99,6 +163,22 @@ public class CatGrammar {
 	}
 
     }
+
+    void check() throws ParseException {
+	Collection<Category> allTargets = new HashSet<Category>();
+	for (Category source : this.rules.keySet()) {
+	    allTargets.addAll(this.rules.get(source));
+	}
+	allTargets.removeAll(this.rules.keySet());
+	// Here, allTargets contains the categories without rules. 
+
+	// for all categories occurring, a rule must be present. 
+	if (!allTargets.isEmpty()) {
+	    throw new ParseException
+		("Found no rule for categries" + allTargets + ". ");
+	}
+    }
+
 /*
     public void addRule(Category sourceC, 
 			Category targetC) throws ParseException {
@@ -120,8 +200,16 @@ public class CatGrammar {
     }
 
 */
-    public boolean isStop(Category cat) {
+    boolean isStart(Category cat) {
+	return this.starts.contains(cat);
+    }
+
+    boolean isStop(Category cat) {
 	return this.stops.contains(cat);
+    }
+
+    List<Compartment> comps(Category cat) {
+	return this.cat2comps.get(cat);
     }
 
     public void map(Category cat, 
