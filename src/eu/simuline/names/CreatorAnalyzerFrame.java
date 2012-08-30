@@ -2,11 +2,8 @@ package eu.simuline.names;
 
 import eu.simuline.util.GifResource;
 
-import org.javalobby.icons20x20.ExecuteProject;
-import org.javalobby.icons20x20.Open;
 import org.javalobby.icons20x20.New;
 import org.javalobby.icons20x20.Magnify;
-import org.javalobby.icons20x20.RotCCDown;
 import org.javalobby.icons20x20.RotCCLeft;
 
 import java.awt.Container;
@@ -15,15 +12,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -31,7 +25,6 @@ import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.JTextField;
-import javax.swing.JTextArea;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.AbstractAction;

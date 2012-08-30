@@ -1,10 +1,6 @@
 package eu.simuline.names;
 
-import eu.simuline.names.parser.ParseException;
-
-import java.io.FileNotFoundException;
 import java.io.File;
-import java.io.IOException;
 
 import java.util.Set;
 import java.util.HashSet;
