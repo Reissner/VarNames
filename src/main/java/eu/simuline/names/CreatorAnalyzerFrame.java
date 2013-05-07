@@ -1,5 +1,7 @@
 package eu.simuline.names;
 
+import eu.simuline.names.parser.ParseException;
+
 import eu.simuline.util.GifResource;
 
 import org.javalobby.icons20x20.New;
@@ -18,6 +20,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -377,7 +381,9 @@ System.out.println("add: "+cand);
 	}
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) 
+	throws FileNotFoundException, IOException,
+	       ParseException {
 	if (args.length != 1) {
 	   throw new IllegalArgumentException
 	       ("Usage: the name of the rules file. ");

@@ -230,20 +230,15 @@ public class CatGrammar {
 
     public String toString() {
 	StringBuffer res = new StringBuffer();
-	res.append("<CatGr>");
-	res.append("<Starts>");
+	res.append("<CatGr><Starts>");
 	res.append(this.starts);
-	res.append("</Starts>");
-	res.append("<Rules>");
+	res.append("</Starts><Rules>");
 	res.append(this.rules);
-	res.append("</Rules>");
-	res.append("<Cat2comps>");
+	res.append("</Rules><Cat2comps>");
 	res.append(this.cat2comps);
-	res.append("</Cat2comps>");
-	res.append("<Stops>");
+	res.append("</Cat2comps><Stops>");
 	res.append(this.stops);
-	res.append("</Stops>");
-	res.append("</CatGr>");
+	res.append("</Stops></CatGr>");
 	return res.toString();
     }
 
