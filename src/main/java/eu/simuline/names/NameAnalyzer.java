@@ -159,7 +159,7 @@ public class NameAnalyzer {
 
 	String linString() {
 	    StringBuilder res = new StringBuilder();
-	    if (this.cat != null) {
+	    if (this.cat != null) {// NOPMD 
 		assert this.predecessor != null;
 		res.append("-");
 		res.append(NameAnalyzer.this.name
@@ -190,7 +190,7 @@ public class NameAnalyzer {
 
 	public String toString() {
 	    StringBuilder res = new StringBuilder();
-	    if (this.cat != null) {
+	    if (this.cat != null) {// NOPMD 
 		assert this.predecessor != null;
 		res.append("(");
 		res.append(this.cat);
