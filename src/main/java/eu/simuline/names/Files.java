@@ -1,14 +1,15 @@
 package eu.simuline.names;
 
-import eu.simuline.names.parser.RulesParser;
-import eu.simuline.names.parser.ParseException;
+import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.Reader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 
 import java.util.List;
 import java.util.ArrayList;
@@ -19,7 +20,17 @@ import java.util.HashMap;
 
 /**
  * A container for all files defining the grammar and for the grammar itself.
- *
+ * The grammar is described by a rules file <code>xxx.rls</code> 
+ * in terms of categories. 
+ * Each category <code>yyy</code> 
+ * is defined by an according category file <code>yyy.cat</code> 
+ * which is looked up in the folder in which the rules file resides. 
+ * Since when searching for categories 
+ * only files with the according ending are taken into account, 
+ * essentially two or more rules files may share categories 
+ * by placing them in a common folder. 
+ * A much cleaner approach is to place each rules file in a separate folder 
+ * and to share categories using links (not use windoofs).
  *
  * Created: Tue Apr 15 19:39:39 2008
  *
@@ -39,33 +50,44 @@ public class Files {
      * Creates a new <code>Files</code> instance.
      *
      */
-    public Files(File rules) 
-	throws FileNotFoundException, IOException, ParseException {
+    public Files(File rules) {
 	this.rules = rules;
-	//reload();
+	reload();
     }
 
-    List<String> reload() {//throws FileNotFoundException, IOException {
+    private static RulesParser getParser(File file) throws IOException {
+	ANTLRFileStream input = new ANTLRFileStream(file.getPath());
+	RulesLexer lexer = new RulesLexer(input);
+	CommonTokenStream tokens = new CommonTokenStream(lexer);
+	return new RulesParser(tokens);
+    }
 
+    /**
+     * Based on the rules file, 
+     * load the categories from the category files 
+     * found in the same directory as the rules file. 
+     * Then read the rules file into {@link #catGr}. 
+     */
+    List<String> reload() {
+
+	// ensure that the rules file is readable... 
 	if (!(this.rules.isFile() && this.rules.canRead())) {
 	    throw new IllegalArgumentException
 		("File \"" + "\" is no file or not readable. ");
 	}
-
+	// ... and determine the enclosing folder 
 	File dir = this.rules.getParentFile();
 	assert dir.isDirectory();
 
-
+	// read all categories from the folder into catFile2cat 
 	this.catFiles = Arrays.asList(dir.listFiles());
-	File catFile;
 	String name;
 	Category cat;
 	Map<File,Category> catFile2cat = new HashMap<File,Category>();
-	Iterator<File> itFiles = this.catFiles.iterator();
-	while (itFiles.hasNext()) {
-	    catFile = itFiles.next();
+	for (File catFile : this.catFiles) {
 	    name = catFile.getName();
 	    if (!name.endsWith(END_CAT)) {
+		// ignore files with the wrong ending 
 		continue;
 	    }
 	    name = name.replaceFirst(END_CATD,"");
@@ -74,45 +96,49 @@ public class Files {
 
 System.out.println("catFile2cat: "+catFile2cat);
 
+	// read the rules file 
 	List<String> excMsgs = new ArrayList<String>();
-	FileReader rd;
-	RulesParser rParser = new RulesParser((Reader)null);
-
+	RulesParser rParser;
 	try {
-	rd = new FileReader(this.rules);
-
-	rParser.ReInit(rd);
-	    this.catGr = rParser.parseRules(catFile2cat.values());
-	} catch (Exception e) {// NOPMD 
+	    rParser = getParser(this.rules);
+	    this.catGr = rParser.parseRules(catFile2cat.values()).carGr;
+	    assert this.catGr != null;
+	} catch (IOException e) {// NOPMD 
+	    excMsgs.add(e.getMessage());
+	} catch (RecognitionException e) {// NOPMD 
 	    excMsgs.add(e.getMessage());
 	}
 
 	
 
 
-
+	// read the category files 
 	List<Compartment> lComp;
 	for (File cand : catFile2cat.keySet()) {
 System.out.println("cand: "+cand);
 	    try {
-		rd = new FileReader(cand);
-		rParser.ReInit(rd);
-		lComp = rParser.parseCategory();
+		rParser = getParser(cand);
+		lComp = rParser.parseCategory().comps;
 System.out.println("lComp: "+lComp);
-	    } catch (Exception e) {// NOPMD 
+	    } catch (IOException e) {// NOPMD 
+		excMsgs.add(e.getMessage());
+		continue;
+	    } catch (RecognitionException e) {// NOPMD 
 		excMsgs.add(e.getMessage());
 		continue;
 	    }
 //****new cat: bad 
 	    try {
 		this.catGr.map(catFile2cat.get(cand),lComp);
-	    } catch (ParseException e) {
+	    } catch (IllegalStateException e) {
 		excMsgs.add(e.getMessage());
 	    }
-	}
+	} // fpr 
+
+	// check the categories 
 	try {
 	    this.catGr.check();
-	} catch (ParseException e) {
+	} catch (IllegalStateException e) {
 	    excMsgs.add(e.getMessage());
 	}
 
