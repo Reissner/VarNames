@@ -1,7 +1,5 @@
 package eu.simuline.names;
 
-import eu.simuline.names.parser.ParseException;
-
 import eu.simuline.util.GifResource;
 
 import org.javalobby.icons20x20.New;
@@ -382,8 +380,7 @@ System.out.println("add: "+cand);
     }
 
     public static void main(String[] args) 
-	throws FileNotFoundException, IOException,
-	       ParseException {
+	throws FileNotFoundException, IOException {
 	if (args.length != 1) {
 	   throw new IllegalArgumentException
 	       ("Usage: the name of the rules file. ");
