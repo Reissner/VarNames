@@ -1,7 +1,5 @@
 package eu.simuline.names;
 
-import eu.simuline.names.parser.ParseException;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -249,7 +247,7 @@ public class NameAnalyzer {
     }
 
     public static void main(String[] args) 
-	throws FileNotFoundException, IOException, ParseException {
+	throws FileNotFoundException, IOException {
 	if (args.length != 2) {
 	   throw new IllegalArgumentException
 	       ("Usage: the name of the rules file " + 
