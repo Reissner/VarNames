@@ -1,7 +1,5 @@
 package eu.simuline.names;
 
-import eu.simuline.names.parser.ParseException;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +100,7 @@ public class CatGrammar {
      *    either <code>targetC</code> was tried to be added more than once. 
      *    </ul>
      */
-    public void addStart(Category targetC) throws ParseException {
+    public void addStart(Category targetC) {
 
 	if (!this.cats.contains(targetC)) {
 	    throw new ParseException
@@ -131,7 +129,7 @@ public class CatGrammar {
      *    either <code>sourceC</code> was tried to be added more than once. 
      *    </ul>
      */
-    public void addStop(Category sourceC) throws ParseException {
+    public void addStop(Category sourceC) {
 	if (!this.cats.contains(sourceC)) {
 	    throw new ParseException
 		("Source \"" + sourceC + "\"is no valid category. ");
@@ -145,7 +143,7 @@ public class CatGrammar {
     }
 
     public void addRule(Category sourceC, 
-			Collection<Category> targets) throws ParseException {
+			Collection<Category> targets) {
 
 	if (!this.cats.contains(sourceC)) {
 	    throw new ParseException
@@ -163,7 +161,7 @@ public class CatGrammar {
 
     }
 
-    void check() throws ParseException {
+    void check() {
 	Collection<Category> allTargets = new HashSet<Category>();
 	for (Category source : this.rules.keySet()) {
 	    allTargets.addAll(this.rules.get(source));
@@ -173,7 +171,7 @@ public class CatGrammar {
 
 	// for all categories occurring, a rule must be present. 
 	if (!allTargets.isEmpty()) {
-	    throw new ParseException
+	    throw new IllegalStateException 
 		("Found no rule for categries" + allTargets + ". ");
 	}
     }
@@ -212,10 +210,11 @@ public class CatGrammar {
     }
 
     public void map(Category cat, 
-		    List<Compartment> comps) throws ParseException {
+		    List<Compartment> comps) {
 	List<Compartment> overwritten = this.cat2comps.put(cat,comps);
 	if (overwritten != null) {
-	    throw new ParseException
+	    throw new IllegalStateException // RecognitionException 
+//	    throw new ParseException
 		("Reassigned compartments of category \"" + cat + "\". ");
 	}
     }
