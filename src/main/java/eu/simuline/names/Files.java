@@ -5,18 +5,13 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileInputStream;
-import java.io.Reader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Arrays;
 
 /**
  * A container for all files defining the grammar and for the grammar itself.
