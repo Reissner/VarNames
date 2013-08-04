@@ -1,0 +1,13 @@
+// kinds of fuel 
+Fo	: Fuel-Oil		// comprises Pfo, Hfo, Do and Gas
+Pfo	: Pilot-Fluel-Oil 
+Hfo	: Heavy-Fuel-Oil   
+Do	: Diesel-Oil 
+Gas	: Gas			// as fuel 
+// others 
+ChAir	: Charge-air 
+Air	: Air 
+Cw	: Cooling-water 
+Wat	: Water 
+Lbo	: Lube-oil 
+Exh	: Exhaust-Gas
