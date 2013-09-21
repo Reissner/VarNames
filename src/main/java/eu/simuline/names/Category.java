@@ -9,13 +9,27 @@ package eu.simuline.names;
  * @author <a href="mailto:ernst@">Ernst Reissner</a>
  * @version 1.0
  */
-public class Category {
+public final class Category {
 
-    private String name;
+    /* -------------------------------------------------------------------- *
+     * attributes.                                                          *
+     * -------------------------------------------------------------------- */
+
+    // must be final to guarantee a valid {@link #hashCode()}. 
+    private final String name;
+
+    /* -------------------------------------------------------------------- *
+     * constructors.                                                        *
+     * -------------------------------------------------------------------- */
 
     public Category(String name) {
 	this.name = name;
     }
+
+    /* -------------------------------------------------------------------- *
+     * methods.                                                             *
+     * -------------------------------------------------------------------- */
+
     public String toString() {
 	return this.name;
     }
@@ -29,6 +43,7 @@ public class Category {
 	return this.toString().equals(other.toString());
     }
 
+    // makes it addable to a Hash Set/Map 
     public int hashCode() {
 	return this.name.hashCode();
     }
