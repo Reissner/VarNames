@@ -24,16 +24,20 @@ import java.util.List;
  */
 public class NameAnalyzer {
 
+    /* -------------------------------------------------------------------- *
+     * inner classes.                                                       *
+     * -------------------------------------------------------------------- */
+
     enum State {
 	Matches, Incomplete, NoMatch;
     } // enum State 
 
-    class Pointer {
-	private int index;
-	private Category cat;
-	private Compartment comp;
-	private Set<Pointer> successors;
-	private Pointer predecessor;
+    final class Pointer {
+	private final int index;
+	private final Category cat;
+	private final Compartment comp;
+	private final Set<Pointer> successors;
+	private final Pointer predecessor;
 
 	Pointer(int index, 
 		Category cat, 
@@ -208,12 +212,31 @@ public class NameAnalyzer {
 	    res.append(this.successors);
 	    return res.toString();
 	}
+
+	// prevent overwriting: enable for (Weak)HashSet/Map 
+	public final boolean equals(Object obj) {
+	    return super.equals(obj);
+	}
+
+	// prevent overwriting: enable for (Weak)HashSet/Map 
+	public final int hashCode() {
+	    return super.hashCode();
+	}
+
     } // class Pointer 
+
+    /* -------------------------------------------------------------------- *
+     * fields.                                                              *
+     * -------------------------------------------------------------------- */
 
 
     private final CatGrammar catGr;
     private String name;
     private Pointer startPointer;
+
+    /* -------------------------------------------------------------------- *
+     * constructors.                                                        *
+     * -------------------------------------------------------------------- */
 
     /**
      * Creates a new <code>NameAnalyzer</code> instance.
@@ -223,6 +246,10 @@ public class NameAnalyzer {
 	this.catGr = catGr;
 	//analyze(name);
     }
+
+    /* -------------------------------------------------------------------- *
+     * methods.                                                             *
+     * -------------------------------------------------------------------- */
 
    State analyze(String name) {
 	this.name  = name;
