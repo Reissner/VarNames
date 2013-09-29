@@ -214,12 +214,12 @@ public class NameAnalyzer {
 	}
 
 	// prevent overwriting: enable for (Weak)HashSet/Map 
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 	    return super.equals(obj);
 	}
 
 	// prevent overwriting: enable for (Weak)HashSet/Map 
-	public final int hashCode() {
+	public int hashCode() {
 	    return super.hashCode();
 	}
 
