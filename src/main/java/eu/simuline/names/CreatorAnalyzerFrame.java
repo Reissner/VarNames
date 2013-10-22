@@ -51,8 +51,8 @@ public class CreatorAnalyzerFrame extends JFrame {
     private final static String STATE_NOT_COMPLETE = "Not Yet Complete";
 
 
-    DefaultComboBoxModel combCat;
-    DefaultComboBoxModel combComp;
+    DefaultComboBoxModel<Category> combCat;
+    DefaultComboBoxModel<Compartment> combComp;
 
 
     NameCreator  creator;
@@ -118,10 +118,10 @@ public class CreatorAnalyzerFrame extends JFrame {
 	Box categories = Box.createVerticalBox();
 	categories.add(new JLabel("categories"));
 
-	this.combCat = new DefaultComboBoxModel();
-	JComboBox comboBox = new JComboBox(this.combCat);
+	this.combCat = new DefaultComboBoxModel<Category>();
+	JComboBox<Category> comboBoxCat = new JComboBox<Category>(this.combCat);
 
-	comboBox.addItemListener(new ItemListener() {
+	comboBoxCat.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 		    switch (e.getStateChange()) {
 			case ItemEvent.SELECTED:
@@ -140,16 +140,17 @@ public class CreatorAnalyzerFrame extends JFrame {
 		    
 		}
 	    });
-	categories.add(comboBox);
+	categories.add(comboBoxCat);
 	catsCmptms.add(categories);
 
 
 	Box compartments = Box.createVerticalBox();
 	compartments.add(new JLabel("compartments"));
 
-	this.combComp = new DefaultComboBoxModel();
-	comboBox = new JComboBox(this.combComp);
-	comboBox.addItemListener(new ItemListener() {
+	this.combComp = new DefaultComboBoxModel<Compartment>();
+	JComboBox<Compartment> comboBoxComp = 
+	    new JComboBox<Compartment>(this.combComp);
+	comboBoxComp.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 		    switch (e.getStateChange()) {
 			case ItemEvent.SELECTED:
@@ -171,7 +172,7 @@ public class CreatorAnalyzerFrame extends JFrame {
 		}
 	    });
 
-	compartments.add(comboBox);
+	compartments.add(comboBoxComp);
 	catsCmptms.add(compartments);
 
 	add(catsCmptms);
@@ -373,7 +374,7 @@ System.out.println("add: "+cand);
     void setComps(List<Compartment> comps) {
 //System.out.println("/////////////setComps: "+comps);
 	this.combComp.removeAllElements();
-	this.combComp.addElement("");
+//	this.combComp.addElement("");
 	for (Compartment cand : comps) {
 	    this.combComp.addElement(cand);
 	}
