@@ -97,7 +97,6 @@ System.out.println("catFile2cat: "+catFile2cat);
 	try {
 	    rParser = getParser(this.rules);
 	    this.catGr = rParser.setCats(catFile2cat.values());
-//	    this.catGr = null; // **** new 
 	    rParser.parseRules();
 	    assert this.catGr != null;
 	} catch (IOException e) {// NOPMD 
@@ -116,7 +115,7 @@ System.out.println("cand: "+cand);
 	    try {
 		rParser = getParser(cand);
 		rParser.parseCategory();
-		lComp = rParser.getCategory();// ***** new 
+		lComp = rParser.getCategory();
 System.out.println("lComp: "+lComp);
 	    } catch (IOException e) {// NOPMD 
 		excMsgs.add(e.getMessage());
