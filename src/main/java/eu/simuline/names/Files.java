@@ -1,8 +1,8 @@
 package eu.simuline.names;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +96,9 @@ System.out.println("catFile2cat: "+catFile2cat);
 	RulesParser rParser;
 	try {
 	    rParser = getParser(this.rules);
-	    this.catGr = rParser.parseRules(catFile2cat.values());
+	    this.catGr = rParser.setCats(catFile2cat.values());
+//	    this.catGr = null; // **** new 
+	    rParser.parseRules();
 	    assert this.catGr != null;
 	} catch (IOException e) {// NOPMD 
 	    excMsgs.add(e.getMessage());
@@ -113,7 +115,8 @@ System.out.println("catFile2cat: "+catFile2cat);
 System.out.println("cand: "+cand);
 	    try {
 		rParser = getParser(cand);
-		lComp = rParser.parseCategory();
+		rParser.parseCategory();
+		lComp = rParser.getCategory();// ***** new 
 System.out.println("lComp: "+lComp);
 	    } catch (IOException e) {// NOPMD 
 		excMsgs.add(e.getMessage());
