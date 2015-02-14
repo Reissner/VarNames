@@ -10,20 +10,15 @@
  * parsed by {@link #parseCategory()}. 
  * </ul>
  *
- * This grammer is a translation from javacc into antlr 3.4. 
- * It can and should be rewritten using ast. 
+ * This grammer is a translation 
+ * from javacc into antlr 3.4 and further into antlr 4. 
  *
  * @see Files
  */
 grammar Rules;
 
-//options {
-//    output = AST;
-//}
 
-@header {
-    package eu.simuline.names;
-
+@parser::header {
     import eu.simuline.names.Category;
     import eu.simuline.names.CatGrammar;
     import eu.simuline.names.Compartment;
@@ -32,21 +27,29 @@ grammar Rules;
     import java.util.HashSet;
 } // @header 
 
-@lexer::header {
-    package eu.simuline.names;
-} // @lexer::header
+@parser::members {
 
-@members {
-} // @members
+    private List<Compartment> comps;
+    private CatGrammar carGr;
+    Collection<Category> targets;
+
+    CatGrammar setCats(Collection<Category> cats) {
+       return this.carGr = new CatGrammar(cats);
+    }
+
+    List<Compartment> getCategory() {
+        return this.comps;
+    }
+} // @parser::members
 
 // ========================================================================== *
 // Whitespace, newline and Comments                                           *
 // ========================================================================== *\
 
-WS : (' ' | '\n' | '\t' | '\r' | '\f') {skip();};
+WS : (' ' | '\n' | '\t' | '\r' | '\f') -> skip;
 
 BlockComment : '/*' (~'*' | '*' ~'/')* '*/';
-LinesComment : '//' (~'\n')* '\n' {skip();};//{$type=NL;};
+LinesComment : '//' (~'\n')* '\n' -> skip;//{$type=NL;};
 
 NL : ('\r'? '\n');
 
@@ -79,18 +82,31 @@ fragment Digit : '0'..'9';
  *
  * @see #parseCategory()
  */
-parseRules [Collection<Category> cats] returns [CatGrammar carGr]
-@init {$carGr = new CatGrammar(cats);}
-    :         Package '{' parseRule[$carGr]* '}' EOF;
-
-parseRule [CatGrammar catGr] 
+parseRules 
 @init {
-   Collection<Category> targets = new HashSet<Category>();
-} // init 
-    : Startup? Name ( Trans '(' parseTargets[targets] ')' ) Finish?;
+    assert this.comps == null;// parser shall not be used for category files  
+}
+    :         Package '{' parseRule* '}' EOF;
 
-parseTargets [Collection<Category> cats]
-    : (Name parseTargets[cats])?;
+parseRule 
+@init {
+   this.targets = new HashSet<Category>();
+} // init 
+    : Startup? Name ( Trans '(' parseTargets ')' ) Finish?
+        {
+            Category cat = new Category($Name.text);
+            if ($Startup.text != null) {
+                this.carGr.addStart(cat);
+            }
+            if ($Finish.text != null) {
+                this.carGr.addStop(cat);
+            }
+            this.carGr.addRule(cat, targets);
+        }
+    ;
+
+parseTargets : (Name parseTargets)? 
+        {this.targets.add(new Category($Name.text));};
 
 /**
  * Parses a category file <code>xxx.cat</code> which has the following shape: 
@@ -101,13 +117,15 @@ parseTargets [Collection<Category> cats]
  * and the (long) name is more intuitive. 
  * Besides the long name, more explanation can be given as comment. 
  */
-parseCategory returns [List<Compartment> comps] 
-@init {$comps = new ArrayList<Compartment>();}
-    : parseCompartment[$comps]* EOF ;
+parseCategory 
+@init {
+    this.comps = new ArrayList<Compartment>();
+    assert this.carGr == null;// parser shall not be used for rules files  
+}
+    : parseCompartment* EOF ;
 
-parseCompartment [List<Compartment> comps]
-    : shortName = Name Colon name=Name 
-        {comps.add(new Compartment($shortName.text,$name.text,""));};
+parseCompartment : shortName = Name Colon name=Name
+        {this.comps.add(new Compartment($shortName.text,$name.text,""));};
 
 
 
