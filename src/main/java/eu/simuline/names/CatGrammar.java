@@ -37,7 +37,7 @@ public class CatGrammar {
      * fields.                                                               *
      * --------------------------------------------------------------------- */
 
-    private Collection<Category> cats;
+    private final Collection<Category> cats;
     Map<Category,Collection<Category>> rules;
 
     /**
@@ -56,8 +56,8 @@ public class CatGrammar {
      * and only {@link #addStop(Category)} allows to add a start category. 
      * It also keeps track of validity. 
      */
-    private Set<Category         > stops;
-    private Map<Category,List<Compartment>> cat2comps;
+    private final Set<Category         > stops;
+    private final Map<Category,List<Compartment>> cat2comps;
 
     /* --------------------------------------------------------------------- *
      * constructors.                                                         *
