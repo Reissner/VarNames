@@ -163,12 +163,12 @@ public class NameAnalyzer {
 	    StringBuilder res = new StringBuilder();
 	    if (this.cat != null) {// NOPMD 
 		assert this.predecessor != null;
-		res.append("-");
+		res.append('-');
 		res.append(NameAnalyzer.this.name
 			   .substring(this.predecessor.index,this.index));
 //		res.append(this.comp.shortName());
 		if (NameAnalyzer.this.catGr.isStop(this.cat)) {
-		    res.append("|");
+		    res.append('|');
 		}
 	    } else {
 		assert this.predecessor == null;
@@ -194,16 +194,16 @@ public class NameAnalyzer {
 	    StringBuilder res = new StringBuilder();
 	    if (this.cat != null) {// NOPMD 
 		assert this.predecessor != null;
-		res.append("(");
+		res.append('(');
 		res.append(this.cat);
-		res.append(":");
+		res.append(':');
 
 		res.append(NameAnalyzer.this.name
 			   .substring(this.predecessor.index,this.index));
 //		res.append(this.comp.shortName());
-		res.append(")");
+		res.append(')');
 		if (NameAnalyzer.this.catGr.isStop(this.cat)) {
-		    res.append("|");
+		    res.append('|');
 		}
 	    } else {
 		assert this.predecessor == null;

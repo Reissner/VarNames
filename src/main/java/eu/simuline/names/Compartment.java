@@ -34,7 +34,7 @@ public class Compartment {
 
     public String toString() {
 	StringBuffer buf = new StringBuffer();
-	buf.append("\n");
+	buf.append('\n');
 	buf.append(this.shortName);
 	buf.append(" \t ");
 	buf.append(this.name);
