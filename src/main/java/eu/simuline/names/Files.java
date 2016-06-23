@@ -63,6 +63,7 @@ public class Files {
      * found in the same directory as the rules file. 
      * Then read the rules file into {@link #catGr}. 
      */
+    @SuppressWarnings("PMD.NPathComplexity")
     List<String> reload() {
 
 	// ensure that the rules file is readable... 
