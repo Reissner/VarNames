@@ -78,7 +78,6 @@ public class Files {
 	// read all categories from the folder into catFile2cat 
 	this.catFiles = Arrays.asList(dir.listFiles());
 	String name;
-	Category cat;
 	Map<File,Category> catFile2cat = new HashMap<File,Category>();
 	for (File catFile : this.catFiles) {
 	    name = catFile.getName();

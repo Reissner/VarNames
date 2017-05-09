@@ -380,6 +380,7 @@ System.out.println("add: "+cand);
 	}
     }
 
+   @SuppressWarnings("PMD.UnusedLocalVariable")
     public static void main(String[] args) 
 	throws FileNotFoundException, IOException {
 	if (args.length != 1) {
