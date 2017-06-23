@@ -1,6 +1,7 @@
 package eu.simuline.names;
 
-import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 
@@ -51,7 +52,7 @@ public class Files {
     }
 
     private static RulesParser getParser(File file) throws IOException {
-	ANTLRFileStream input = new ANTLRFileStream(file.getPath());
+	CharStream input = CharStreams.fromFileName(file.getPath());
 	RulesLexer lexer = new RulesLexer(input);
 	CommonTokenStream tokens = new CommonTokenStream(lexer);
 	return new RulesParser(tokens);
