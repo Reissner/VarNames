@@ -1,6 +1,6 @@
 package eu.simuline.names;
 
-import eu.simuline.util.GifResource;
+import eu.simuline.util.images.GifResource;
 
 import org.javalobby.icons20x20.New;
 import org.javalobby.icons20x20.Magnify;

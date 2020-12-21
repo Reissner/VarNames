@@ -1,6 +1,6 @@
 package org.javalobby.icons20x20;
 
-import  eu.simuline.util.GifResource;
+import  eu.simuline.util.images.GifResource;
 
 /**
  * Represents a "new" icon. 

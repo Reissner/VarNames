@@ -1,6 +1,6 @@
 package org.javalobby.icons16x16;
 
-import  eu.simuline.util.GifResource;
+import  eu.simuline.util.images.GifResource;
 
 /**
  * Represents an open icon. 
