@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <!-- coordinates for model and artifact -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>eu.simuline</groupId>
+  <artifactId>varnames</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+
+  <name>VarNames</name>
+  <description>
+    Very strange piece of software
+    checking validity of variable names. 
+  </description>
+
+  <url>http://www.simuline.eu</url><!-- TBD: create -->
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <!--url>http://www.simuline.eu/LICENSE-1.0.txt</url>
+	  <distribution>repo</distribution>
+	  <comments>This license prohibits all kinds of distribution. </comments-->
+    </license>
+  </licenses>
+
+  
+  <organization>
+    <name>l2r.org</name>
+    <url>http://www.simuline.eu</url>
+  </organization>
+  
+  <developers>
+    <developer>
+      <name>Ernst Reissner</name>
+      <email>Ernst.Reissner@simuline.eu</email>
+      <timezone>Europe/Berlin</timezone>
+    </developer>
+  </developers>
+  <!-- mailingLists></mailingLists-->
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- antlr4, its runtime and mvn plugin all same version, 
+         tied to antlr-annotation and ST4 -->
+    <versionAntlr>4.7</versionAntlr><!-- tied to antlr 4.7 -->
+    <!--versionAntlrAnnot>4.3</versionAntlrAnnot--><!-- tied to antlr 4.7 -->
+    <versionAntlrST4>4.0.8</versionAntlrST4>  <!-- tied to antlr 4.7 -->
+    <versionAntlr3>3.5.2</versionAntlr3>  <!-- from ST4 -->
+    <srcAntlr4Dir>src/main/antlr4/</srcAntlr4Dir>
+    <parserTargetDirNamecheck>
+    ${srcJavaDir}eu/simuline/names/
+    </parserTargetDirNamecheck>
+  </properties>
+
+
+  <!-- source repositories: at the moment not needed. -->
+  <!--repositories>
+    <repository>
+      <id>publicRepoAtSimuline</id>
+      <url>https://www.simuline.eu/RepositoryMaven</url>
+    </repository>
+  </repositories-->
+
+  <scm>
+    <connection>scm:svn:file:///SVN_Archive</connection>
+    <developerConnection>scm:svn:file:///SVN_Archive</developerConnection>
+    <tag>HEAD</tag> <!-- the default -->
+    <url>file:///SVN_Archive</url><!-- publicly browseable -->
+    <!--connection>
+      scm:git:https://github.com/Reissner/varnames.git
+    </connection>
+    <developerConnection>
+      scm:git:https://github.com/Reissner/varnames.git
+    </developerConnection>
+    <url>https://github.com/Reissner/varnames</url>
+    <tag>icons-0.1</tag-->
+  </scm>
+
+
+  <repositories>
+    <!-- TBD: source repositories: at the moment not needed. -->
+    <!--repository>
+      <id>privateRepositoryAtLocal</id>
+      <url>file:///home/ernst/Software/RepositoryPrivate/maven2/</url>
+    </repository-->
+   <repository>
+      <id>publicRepoAtSimuline</id>
+      <name>repo at simuline</name>
+      <url>https://www.simuline.eu/RepositoryMaven</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement><!-- For authentication see ~/.m2/settings.xml -->
+    <site>
+      <id>publicSiteAtSimuline</id>
+      <url>ftp://www.simuline.eu/public_html/VarNames</url>
+    </site>
+
+    <repository>
+      <id>publicRepoAtSimuline</id>
+      <url>ftp://www.simuline.eu/public_html/RepositoryMaven</url>
+    </repository>
+  </distributionManagement>
+
+ <mailingLists>
+    <!--mailingList>
+      <name>maven-latex-plugin Users</name>
+      <archive>http://groups.google.com/group/maven-latex-plugin-users</archive>
+      <post>maven-latex-plugin-users@googlegroups.com</post>
+      <subscribe>maven-latex-plugin-users+subscribe@googlegroups.com</subscribe>
+      <unsubscribe>maven-latex-plugin-users+unsubscribe@googlegroups.com</unsubscribe>
+    </mailingList-->
+  </mailingLists>
+
+  <!--issueManagement>
+    <system>Github Issues</system>
+    <url>https://github.com/akquinet/maven-latex-plugin/issues</url>
+    </issueManagement-->
+
+ 
+
+
+  <build>
+
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ftp</artifactId>
+         <version>3.3.2</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-file</artifactId>
+         <version>3.3.2</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-http</artifactId>
+         <version>3.3.2</version>
+      </extension>
+    </extensions>
+
+    
+    <plugins>
+
+
+      <!-- configuration for antlr4 TBC: really needed -->
+      <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-maven-plugin</artifactId>
+        <version>${versionAntlr}</version>
+	<configuration>
+	  <sourceDirectory>${srcAntlr4Dir}</sourceDirectory>
+	  <outputDirectory>src/main/java</outputDirectory>
+	  <visitor>true</visitor><!-- needed for calc only -->
+	  <treatWarningsAsErrors>true</treatWarningsAsErrors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>antlr</id>
+            <goals>
+              <goal>antlr4</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- configuration for the compile plugin -->
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<version>3.8.0</version>
+	<configuration>
+          <source>11</source>
+          <target>11</target>
+          <fork>true</fork>
+	</configuration>
+      </plugin>
+
+      <!-- configuration for site -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.7.1</version>
+        <configuration>
+          <locales>en</locales>
+        </configuration>
+      </plugin>
+
+
+      
+    </plugins>
+  </build>
+
+
+  <reporting>
+    <plugins>
+     <!-- configures the aspects of the reporting, 
+	   i.e. the kinds of reports generated. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+	<reportSets>
+	  <reportSet>
+	    <id>gen-report</id>
+	    <reports>
+	      <report>index</report>
+	      <report>summary</report>
+	      <report>licenses</report>
+	      <report>team</report>
+
+	      <report>ci-management</report>
+	      <!--report>dependencies</report-->
+	      <report>dependency-convergence</report>
+	      <report>dependency-info</report>
+	      <report>dependency-management</report>
+	      <report>distribution-management</report>
+	      <report>help</report>
+	      <report>issue-management</report>
+	      <report>mailing-lists</report>
+	      <report>modules</report>
+	      <report>plugin-management</report>
+	      <report>plugins</report>
+	      <report>scm</report>
+	    </reports>
+	  </reportSet>
+	</reportSets>
+      </plugin>
+   </plugins>
+  </reporting>
+
+  
+
+  <dependencies>
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>${versionAntlr}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>ST4</artifactId>
+      <version>${versionAntlrST4}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr-runtime</artifactId>
+      <version>${versionAntlr3}</version>
+    </dependency>
+
+
+     <dependency>
+      <groupId>eu.simuline</groupId>
+      <artifactId>icons</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+</project>
