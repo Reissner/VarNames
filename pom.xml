@@ -301,7 +301,32 @@
         </configuration>
       </plugin>
 
-      
+          <!-- creates a jar with dependencies -->
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+	    <manifest>
+	      <mainClass>eu.simuline.names.CreatorAnalyzerFrame</mainClass>
+	    </manifest>
+         </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase> 
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 
@@ -349,6 +374,14 @@
   
 
   <dependencies>
+    <!--ependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4</artifactId>
+      <version>4.2</version>
+    </dependency-->
+      <!-- If you only need the JAR in test, add the following line too -->
+      <!--scope>test</scope-->
+    
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
@@ -360,7 +393,7 @@
       <artifactId>ST4</artifactId>
       <version>${versionAntlrST4}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
