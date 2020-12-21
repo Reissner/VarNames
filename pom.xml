@@ -43,30 +43,62 @@
   </developers>
   <!-- mailingLists></mailingLists-->
   
+  <pluginRepositories>
+  </pluginRepositories>
+
   <properties>
+    <versionMvn>3.6.0</versionMvn>
+    <!-- Using platform encoding to copy filtered resources; 
+    without project.build.sourceEncoding the build is platform dependent! -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
     <!-- antlr4, its runtime and mvn plugin all same version, 
          tied to antlr-annotation and ST4 -->
     <versionAntlr>4.7</versionAntlr><!-- tied to antlr 4.7 -->
     <!--versionAntlrAnnot>4.3</versionAntlrAnnot--><!-- tied to antlr 4.7 -->
     <versionAntlrST4>4.0.8</versionAntlrST4>  <!-- tied to antlr 4.7 -->
     <versionAntlr3>3.5.2</versionAntlr3>  <!-- from ST4 -->
+
+    <versionJava>1.8</versionJava><!-- not  used -->
+
     <srcAntlr4Dir>src/main/antlr4/</srcAntlr4Dir>
+    <srcJavaDir>src/main/java/</srcJavaDir>
     <parserTargetDirNamecheck>
     ${srcJavaDir}eu/simuline/names/
     </parserTargetDirNamecheck>
+    
+   <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <javac.debug>true</javac.debug>
   </properties>
 
 
   <!-- source repositories: at the moment not needed. -->
-  <!--repositories>
-    <repository>
+  <repositories>
+   <repository>
       <id>publicRepoAtSimuline</id>
+      <name>repo at simuline</name>
       <url>https://www.simuline.eu/RepositoryMaven</url>
     </repository>
-  </repositories-->
+  </repositories>
 
-  <scm>
+
+
+
+  <distributionManagement><!-- For authentication see ~/.m2/settings.xml -->
+    <site>
+      <id>publicSiteAtSimuline</id>
+      <url>ftp://www.simuline.eu/public_html/VarNames</url>
+    </site>
+
+    <repository>
+      <id>publicRepoAtSimuline</id>
+      <url>ftp://www.simuline.eu/public_html/RepositoryMaven</url>
+    </repository>
+  </distributionManagement>
+
+
+    <scm>
     <connection>scm:svn:file:///SVN_Archive</connection>
     <developerConnection>scm:svn:file:///SVN_Archive</developerConnection>
     <tag>HEAD</tag> <!-- the default -->
@@ -82,32 +114,7 @@
   </scm>
 
 
-  <repositories>
-    <!-- TBD: source repositories: at the moment not needed. -->
-    <!--repository>
-      <id>privateRepositoryAtLocal</id>
-      <url>file:///home/ernst/Software/RepositoryPrivate/maven2/</url>
-    </repository-->
-   <repository>
-      <id>publicRepoAtSimuline</id>
-      <name>repo at simuline</name>
-      <url>https://www.simuline.eu/RepositoryMaven</url>
-    </repository>
-  </repositories>
-
-  <distributionManagement><!-- For authentication see ~/.m2/settings.xml -->
-    <site>
-      <id>publicSiteAtSimuline</id>
-      <url>ftp://www.simuline.eu/public_html/VarNames</url>
-    </site>
-
-    <repository>
-      <id>publicRepoAtSimuline</id>
-      <url>ftp://www.simuline.eu/public_html/RepositoryMaven</url>
-    </repository>
-  </distributionManagement>
-
- <mailingLists>
+  <mailingLists>
     <!--mailingList>
       <name>maven-latex-plugin Users</name>
       <archive>http://groups.google.com/group/maven-latex-plugin-users</archive>
@@ -148,6 +155,66 @@
     
     <plugins>
 
+      <!-- at the moment just to enforce maven version -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M3</version>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>${versionMvn}</version>
+                </requireMavenVersion>
+                <!--requireJavaVersion>
+                  <version>11</version>
+                </requireJavaVersion-->
+              </rules>    
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+      <!-- configuration for clean plugin -->
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.0.0</version>
+	<configuration>
+	  <verbose>true</verbose>
+	  <filesets>
+	    <fileset>
+	      <directory>${srcJavaDir}</directory>
+	      <includes>
+		<include>*Lexer.java</include>
+		<include>*Parser.java</include>
+		<include>*.tokens</include>
+	      </includes>
+	    </fileset>
+	    <fileset>
+	      <directory>${parserTargetDirNamecheck}</directory>
+	      <includes>
+		<include>**/RulesLexer.java</include>
+		<include>**/RulesParser.java</include>
+		<include>Rules*Listener.java</include>
+		<include>Rules*Visitor.java</include>
+		<include>**/Rules*.tokens</include>
+	      </includes>
+	    </fileset>
+	    <fileset>
+	      <directory>${srcAntlr4Dir}</directory>
+	      <includes>
+		<include>**/*.g4~</include>
+	      </includes>
+	    </fileset>
+ 	  </filesets>
+	</configuration>
+    </plugin>
 
       <!-- configuration for antlr4 TBC: really needed -->
       <plugin>
@@ -156,13 +223,14 @@
         <version>${versionAntlr}</version>
 	<configuration>
 	  <sourceDirectory>${srcAntlr4Dir}</sourceDirectory>
-	  <outputDirectory>src/main/java</outputDirectory>
+	  <outputDirectory>${srcJavaDir}</outputDirectory>
 	  <visitor>true</visitor><!-- needed for calc only -->
 	  <treatWarningsAsErrors>true</treatWarningsAsErrors>
         </configuration>
         <executions>
           <execution>
             <id>antlr</id>
+            <!--phase>generate-sources</phase-->
             <goals>
               <goal>antlr4</goal>
             </goals>
@@ -192,6 +260,46 @@
         </configuration>
       </plugin>
 
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <archive>
+            <!--manifestFile>
+	    ${project.build.outputDirectory}/META-INF/MANIFEST.MF
+	    </manifestFile-->
+	    <manifest>
+	      <!-- adds the following lines to MANIFEST.MF (default is false): 
+		   Implementation-Title: ${project.name}
+		   Implementation-Version: ${project.version}
+		   Implementation-Vendor-Id: ${project.groupId}
+		   Implementation-Vendor: ${project.organization.name}
+		   Implementation-URL: ${project.url} -->
+	      <addDefaultImplementationEntries>
+		true
+	      </addDefaultImplementationEntries>
+	      <!-- adds the following lines to MANIFEST.MF (default is false): 
+		   Specification-Title: ${project.name}
+		   Specification-Version: 
+		   ${project.artifact.selectedVersion.majorVersion}.
+		   ${project.artifact.selectedVersion.minorVersion}
+		   Specification-Vendor: ${project.organization.name} -->
+	      <addDefaultSpecificationEntries>
+		true
+	      </addDefaultSpecificationEntries>
+	      <mainClass>eu.simuline.names.CreatorAnalyzerFrame</mainClass>
+	    </manifest>
+	    <manifestEntries>
+	      <codebase>https://www.simuline.eu</codebase>
+	    </manifestEntries>
+          </archive>
+	  <includes>
+            <include>eu/**</include>
+            <include>org/antlr/v4/**</include>
+          </includes>
+        </configuration>
+      </plugin>
 
       
     </plugins>
@@ -259,8 +367,7 @@
       <version>${versionAntlr3}</version>
     </dependency>
 
-
-     <dependency>
+    <dependency>
       <groupId>eu.simuline</groupId>
       <artifactId>icons</artifactId>
       <version>0.1-SNAPSHOT</version>
