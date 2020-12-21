@@ -87,7 +87,7 @@ public class Files {
 		continue;
 	    }
 	    name = name.replaceFirst(END_CATD,"");
-	    catFile2cat.put(catFile,new Category(name));
+	    catFile2cat.put(catFile, new Category(name));
 	}
 
 System.out.println("catFile2cat: "+catFile2cat);
