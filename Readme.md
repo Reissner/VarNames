@@ -1,3 +1,5 @@
+<!-- markdownlint-disable no-trailing-spaces -->
+<!-- markdownlint-disable no-inline-html -->
 # Variables checker
 
 Very strange piece of software
